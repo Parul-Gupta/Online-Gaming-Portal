@@ -4,8 +4,8 @@
 
 var Game = {};
 
-var width = 1300;
-var height = 550;
+var width = window.innerWidth;
+var height = window.innerHeight;
 
 var truck;
 var wheelMaterial;
@@ -25,6 +25,9 @@ Game.preload = function() {
 	game.load.image('wheel', 'asset/wheel.png');
 	game.load.image('dot', 'asset/dot.png');
 	game.load.physics("physics", "asset/physics.json");
+	game.load.physics("physics2", "asset/New Project.json");
+	game.load.image('terrain', 'asset/mountain.png');
+	game.load.image('mount', 'asset/mount2.png');
 };
 
 Game.create = function() {
@@ -35,7 +38,10 @@ Game.create = function() {
 	//set world boundaries with a large world width
 	bg = game.add.tileSprite(0, -height, width*10, height*2, 'sky');
 	game.world.setBounds(0,-height,width*10,height*2);
+
 	game.physics.startSystem(Phaser.Physics.P2JS);
+	game.physics.p2.setImpactEvents(true);
+	game.physics.p2.restitution = 0.8;
 	game.physics.p2.gravity.y = 500;
 
 	wheelMaterial = game.physics.p2.createMaterial("wheelMaterial");
@@ -54,8 +60,22 @@ Game.create = function() {
 	var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	spaceKey.onDown.add(Game.onSpaceKeyDown, this);
 
+	for(var i = 0;  i*400 < width*10 ; i++){
+		var backMount = game.add.sprite(i*400, height - 350, 'mount');
+		backMount.scale.setTo(2, 2);
+	}
+
+	for(var i = 0;  i*640 < width*10 ; i++){
+		var ground = game.add.sprite(i*640, height - 200, 'terrain');
+		game.physics.p2.enable(ground, false);
+		ground.body.clearShapes();
+		ground.body.loadPolygon("physics2","mountain");
+		ground.body.immovable = true;
+		ground.body.kinematic = true;
+		ground.body.setMaterial(worldMaterial);
+	}
+
 	Game.initTruck();
-	Game.initTerrain();
 
 	sprite = game.add.sprite(0,0);
 	sprite.fixedToCamera = true;
@@ -84,23 +104,12 @@ Game.initTruck = function() {
 	truck = new Vehicle(truckFrame);
 	truck.frame.body.clearShapes();
 	truck.frame.body.loadPolygon("physics", "truck");
+
 	game.camera.follow(truck.frame);
 
 	var distBelowTruck = 24;
 	Game.initWheel([55, distBelowTruck]);
 	Game.initWheel([-52, distBelowTruck]);
-};
-
-Game.initTerrain = function() {
-	//initialize the terrain with bounds
-	var terrain = new TerrainController(game, 50, game.world.width - 50,
-		300, height - 50);
-	//draw the terrain
-	terrain.drawOutline();
-	//add the physics body
-	var groundBody = terrain.addToWorld();
-	groundBody.setMaterial(worldMaterial);
-	groundBody.name = "terrain";
 };
 
 Game.initWheel = function (offsetFromTruck) {
