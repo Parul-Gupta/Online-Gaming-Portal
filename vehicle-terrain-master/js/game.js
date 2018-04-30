@@ -26,7 +26,7 @@ Game.preload = function() {
 	game.load.image('dot', 'asset/dot.png');
 	game.load.physics("physics", "asset/physics.json");
 	game.load.physics("physics2", "asset/New Project.json");
-	game.load.image('terrain', 'asset/mountain.png');
+	game.load.image('terrain', 'asset/mountain2.png');
 	game.load.image('mount', 'asset/mount2.png');
 };
 
@@ -41,7 +41,6 @@ Game.create = function() {
 
 	game.physics.startSystem(Phaser.Physics.P2JS);
 	game.physics.p2.setImpactEvents(true);
-	game.physics.p2.restitution = 0.8;
 	game.physics.p2.gravity.y = 500;
 
 	wheelMaterial = game.physics.p2.createMaterial("wheelMaterial");
@@ -54,19 +53,19 @@ Game.create = function() {
 		wheelMaterial, worldMaterial
 	);
 	contactMaterial.friction = 1e2;
-	contactMaterial.restitution = .5;
+	contactMaterial.restitution = .3;
 
 	//call onSpaceKeyDown when space key is first pressed
 	var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	spaceKey.onDown.add(Game.onSpaceKeyDown, this);
 
 	for(var i = 0;  i*400 < width*10 ; i++){
-		var backMount = game.add.sprite(i*400, height - 350, 'mount');
+		var backMount = game.add.sprite(i*400, height - 330, 'mount');
 		backMount.scale.setTo(2, 2);
 	}
 
-	for(var i = 0;  i*640 < width*10 ; i++){
-		var ground = game.add.sprite(i*640, height - 200, 'terrain');
+	for(var i = 0;  i*1800 < width*10 ; i++){
+		var ground = game.add.sprite(i*1800 + 800, height, 'terrain');
 		game.physics.p2.enable(ground, false);
 		ground.body.clearShapes();
 		ground.body.loadPolygon("physics2","mountain");
@@ -100,7 +99,7 @@ Game.update = function () {
 Game.initTruck = function() {
 	//initialize the truck and add the proper physics body
 	
-	var truckFrame = game.add.sprite(width*0.25, height*0.4, "truck");
+	var truckFrame = game.add.sprite(width*0.1, 0, "truck");
 	truck = new Vehicle(truckFrame);
 	truck.frame.body.clearShapes();
 	truck.frame.body.loadPolygon("physics", "truck");
