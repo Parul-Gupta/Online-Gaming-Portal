@@ -27,6 +27,8 @@ Game.preload = function() {
 	game.load.physics("physics", "asset/physics.json");
 	game.load.physics("physics2", "asset/New Project.json");
 	game.load.image('terrain', 'asset/mountain2.png');
+	game.load.image('terrain3', 'asset/mount3.png');
+	game.load.image('terrain4', 'asset/mount4.png');
 	game.load.image('mount', 'asset/mount2.png');
 };
 
@@ -36,8 +38,8 @@ Game.create = function() {
 	var testKey = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
     testKey.onDown.add(Client.sendTest, this);
 	//set world boundaries with a large world width
-	bg = game.add.tileSprite(0, -height, width*10, height*2, 'sky');
-	game.world.setBounds(0,-height,width*10,height*2);
+	bg = game.add.tileSprite(0, -height, width*20, height*2, 'sky');
+	game.world.setBounds(0,-height,width*20,height*2);
 
 	game.physics.startSystem(Phaser.Physics.P2JS);
 	game.physics.p2.setImpactEvents(true);
@@ -52,26 +54,40 @@ Game.create = function() {
 	var contactMaterial = game.physics.p2.createContactMaterial(
 		wheelMaterial, worldMaterial
 	);
-	contactMaterial.friction = 1e2;
+	contactMaterial.friction = 1e5;
 	contactMaterial.restitution = .3;
 
 	//call onSpaceKeyDown when space key is first pressed
 	var spaceKey = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
 	spaceKey.onDown.add(Game.onSpaceKeyDown, this);
 
-	for(var i = 0;  i*400 < width*10 ; i++){
+	for(var i = 0;  i*400 < width*20 ; i++){
 		var backMount = game.add.sprite(i*400, height - 330, 'mount');
 		backMount.scale.setTo(2, 2);
 	}
 
-	for(var i = 0;  i*1800 < width*10 ; i++){
-		var ground = game.add.sprite(i*1800 + 800, height, 'terrain');
+	for(var i = 0;  i*6200 < width*20 ; i++){
+		var ground = game.add.sprite(i*6200 + 900, height, 'terrain');
+		var ground3 = game.add.sprite(i*6200 + 900 +1900,height-9,'terrain3');
+		var ground4 = game.add.sprite(i*6200 + 900 +4100,height-20,'terrain4');
 		game.physics.p2.enable(ground, false);
+		game.physics.p2.enable(ground3, false);
+		game.physics.p2.enable(ground4, false);
 		ground.body.clearShapes();
+		ground3.body.clearShapes();
+		ground4.body.clearShapes();
 		ground.body.loadPolygon("physics2","mountain");
+		ground3.body.loadPolygon("physics2","mount3");
+		ground4.body.loadPolygon("physics2","mount4");
 		ground.body.immovable = true;
+		ground3.body.immovable = true;
+		ground4.body.immovable = true;
 		ground.body.kinematic = true;
+		ground3.body.kinematic = true;
+		ground4.body.kinematic = true;
 		ground.body.setMaterial(worldMaterial);
+		ground3.body.setMaterial(worldMaterial);
+		ground4.body.setMaterial(worldMaterial);
 	}
 
 	Game.initTruck();
